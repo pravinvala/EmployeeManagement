@@ -1,0 +1,291 @@
+﻿@model ExcellenceIT.Models.EmployeeCreateModel
+@{
+    ViewBag.Title = "Create";
+}
+
+<style>
+    img {
+        max-width: 128px;
+        max-height: 128px;
+        width: auto;
+        height: auto;
+    }
+</style>
+<div class="row">
+    <form id="myForm" method="post" enctype="multipart/form-data">
+        <div class="col-md-12 text-center">
+            <label class="h2">Add New Employee</label>
+            <hr />
+        </div>
+        @Html.HiddenFor(m => m.EmpID)
+        @Html.HiddenFor(m => m.EmployeePhoto)
+        <div class="col-md-6 form-group">
+            <label>First Name</label>
+            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control ", @placeholder = "First Name" })
+        </div>
+        <div class="col-md-6 form-group">
+            <label>Last Name</label>
+            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control ", @placeholder = "Last Name" })
+        </div>
+        <div class="col-md-6 form-group">
+            <label>Gender</label>
+            @Html.DropDownListFor(m => m.Gender,
+           new List<SelectListItem> {
+               new SelectListItem {Text = "Male", Value="Male"},
+               new SelectListItem {Text = "Female", Value="Female"},
+           }, "Select Gender", new { @class = "form-control " })
+        </div>
+        <div class="col-md-6 form-group">
+            <label>Phone</label>
+            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control ", @type = "phone", @placeholder = "Phone Number", maxlength = 10 })
+        </div>
+        <div class="col-md-6 form-group">
+            <label>Email</label>
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control ", type = "Email", @placeholder = "Email" })
+        </div>
+        <div class="col-md-6 form-group">
+            <label>Department</label>
+            @Html.TextBoxFor(m => m.Department, new { @class = "form-control ", })
+        </div>
+        <div class="col-md-6 form-group">
+            <label>Date of Birth</label>
+            @Html.TextBoxFor(m => m.DOB, "{0:dd/MM/yyyy}", new { @class = "form-control date-picker", })
+        </div>
+
+        <div class="col-md-6 form-group">
+            <label>Country</label>
+            @Html.DropDownListFor(m => m.CountryID, new SelectList(ViewBag.Country, "Value", "Text"), "Select Country", new { @class = "form-control " })
+        </div>
+        @if (Model != null)
+        {
+            <div class="col-md-6 form-group" id="State">
+                <label>State</label>
+                @Html.DropDownListFor(m => m.StateID, new SelectList(ViewBag.State, "Value", "Text"), "Select State", new { @class = "form-control " })
+            </div>
+
+            <div class="col-md-6 form-group" id="City">
+                <label>City</label>
+                @Html.DropDownListFor(m => m.CityID, new SelectList(ViewBag.City, "Value", "Text"), "Select City", new { @class = "form-control " })
+            </div>
+        }
+        else
+        {
+            <div class="col-md-6 form-group" id="State">
+                <label>State</label>
+                @Html.DropDownListFor(m => m.StateID, new List<SelectListItem>(), "Select State", new { @class = "form-control " })
+            </div>
+
+            <div class="col-md-6 form-group" id="City">
+                <label>City</label>
+                @Html.DropDownListFor(m => m.CityID, new List<SelectListItem>(), "Select City", new { @class = "form-control " })
+            </div>
+        }
+
+        @if (Model != null)
+        {
+            <div class="col-md-3 form-group">
+                <label>Photo</label>
+                <input type="file" class="form-control" name="empPic" id="empPic" />
+            </div>
+            <div class="col-md-3 form-group">
+                <img src="~/Images/@Model.EmployeePhoto"  height="128" width="128"/>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-6 form-group">
+                <label>Photo</label>
+                <input type="file" class="form-control" name="empPic" id="empPic" />
+            </div>
+        }
+        <div class="col-md-6 form-group">
+            <label>Pincode</label>
+            @Html.TextBoxFor(m => m.Pincode, new { @class = "form-control ", @placeholder = "Enter Pincode", maxlength = 6 })
+        </div>
+        <div class="col-md-6 form-group">
+            <label>Hobbbies</label>
+            @Html.TextAreaFor(m => m.Hobbies, new { @class = "form-control " })
+        </div>
+
+        <div class="col-md-6 form-group">
+            <label></label>
+            <a class="btn btn-primary" id="btn-save">Save</a>
+        </div>
+    </form>
+</div>
+
+
+@section scripts{
+    <script>
+
+        $("#CountryID").on("change", function () {
+            var id = $("#CountryID").val();
+            $('#CityID').html("<option value=''>Select City</option>");
+            $.ajax({
+                url: '/Employee/GetStateData?id=' + id,
+                type: 'GET',
+                success: function (result) {
+                    if (result.isSuccess) {
+                        var state = "";
+                        state = state + '<option value="">Selsct State</option>';
+                        for (var i = 0; i < result.result.length; i++) {
+                            state = state + '<option value=' + result.result[i].Value + '>' + result.result[i].Text + '</option>';
+                        }
+                        state = state + '</select>';
+                        $('#StateID').html(state);
+                    }
+                    else {
+                        //Error
+                    }
+                }
+            });
+        });
+
+
+        $("#StateID").on("change", function () {
+            var id = $("#StateID").val();
+
+            $.ajax({
+                url: '/Employee/GetCityData?id=' + id,
+                type: 'GET',
+                success: function (result) {
+                    if (result.isSuccess) {
+                        var city = "";
+                        city = city + '<option value="">Select City</option>';
+                        for (var i = 0; i < result.result.length; i++) {
+                            city = city + '<option value=' + result.result[i].Value + '>' + result.result[i].Text + '</option>';
+                        }
+                        city = city + '</select>';
+                        $('#CityID').html(city);
+                    }
+                    else {
+                        //Error
+                    }
+                }
+            });
+        });
+
+        
+
+
+
+
+
+        $("#btn-save").on("click", function () {
+
+            if ($("#FirstName").val() == "") {
+                toastr["warning"]("Please Enter First Name");
+                return
+            }
+            else if ($("#LastName").val() == "") {
+                toastr["warning"]("Please Enter Last Name");
+                return
+            }
+            else if ($("#Gender").val() == "") {
+                toastr["warning"]("Please Specify Gender");
+                return
+            }
+            else if (!$("#Phone").val().match('[0-9]{10}')) {
+                toastr["warning"]("Please Enter Valid Mobile Number");
+                return
+            }
+            else if ($("#Email").val() == "") {
+                toastr["warning"]("Please Enter Valid Email");
+                return
+            }
+            else if ($("#Email").val() != "") {
+                if (!validateEmail($("#Email").val())) {
+                    toastr["warning"]("Please Enter Valid Email");
+                    return
+                }
+            }
+            else if ($("#Department").val() == "") {
+                toastr["warning"]("Please Enter Department");
+                return
+            }
+            else if ($("#DOB").val() == "") {
+                toastr["warning"]("Please Select Your Date of Birth");
+                return
+            }
+            else if ($("#CountryID").val() == "") {
+                toastr["warning"]("Please Select Country");
+                return
+            }
+            else if ($("#StateID").val() == "") {
+                toastr["warning"]("Please Select State");
+                return
+            }
+            else if ($("#CityID").val() == "") {
+                toastr["warning"]("Please Select City");
+                return
+            }
+            else if ($("#Hobbies").val() == "") {
+                toastr["warning"]("Please Enter Atleast 2 Hobbies Saprated by Comma");
+                return
+            }
+            if (!$("#Pincode").val() != "") {
+                if (!validatePIN($("#Pincode").val())) {
+                    toastr["warning"]("Please Enter Valid Pincode");
+                    return
+                }
+            }
+            if ($("#Hobbies").val() == "") {
+                    toastr["warning"]("You must add minimum two hobbbies to continue (saprate by comma)");
+                    return
+            }
+            else {
+                var Hobbies = $("#Hobbies").val().split(",");
+                debugger;
+                if (Hobbies.length <= 1) {
+                    toastr["warning"]("You must add minimum two hobbbies to continue (saprate by comma)");
+                    return
+                }
+            }
+            var input = document.querySelector('input[type=file]'), file = input.files[0];
+            if ($("#EmployeePhoto").val() == "") {
+                if (!file || !file.type.match(/image.*/)) {
+                    toastr["warning"]("Please select valid image file");
+                    return
+                }
+            }
+            var myformdata = new FormData();
+            var files = $("#empPic").get(0).files;
+
+            myformdata.append("file", file);
+            myformdata.append("EmpID", $("#EmpID").val());
+            myformdata.append("FirstName", $("#FirstName").val());
+            myformdata.append("LastName", $("#LastName").val());
+            myformdata.append("Gender", $("#Gender").val());
+            myformdata.append("DOB", $("#DOB").val());
+            myformdata.append("Email", $("#Email").val());
+            myformdata.append("Phone", $("#Phone").val());
+            myformdata.append("Department", $("#Department").val());
+            myformdata.append("CityID", $("#CityID").val());
+            myformdata.append("StateID", $("#StateID").val());
+            myformdata.append("CountryID", $("#CountryID").val());
+            myformdata.append("Pincode", $("#Pincode").val());
+            myformdata.append("Hobbies", $("#Hobbies").val());
+            myformdata.append("EmployeePhoto", $("#EmployeePhoto").val());
+            $.ajax({
+                url: '@Url.Action("Create","Employee")',
+                type: 'POST',
+                data: myformdata,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    if (result.isSuccess) {
+                        window.location.href = "/Employee/Index"
+                        //Addedd
+                    }
+                    else {
+                        toastr["error"]("Something went wrong, please try agin");
+                        //Error
+                    }
+                }
+            });
+        });
+
+
+    </script>
+}

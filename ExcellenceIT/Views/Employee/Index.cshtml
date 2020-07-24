@@ -1,0 +1,131 @@
+﻿@model ExcellenceIT.Models.EmployeeViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+    img {
+        max-width: 64px;
+        max-height: 64px;
+        width: auto;
+        height: auto;
+    }
+</style>
+
+<div class="container">
+    <label class="h2 text-center">Employee List</label>
+    <a href="javascript:editEmployee();" class="btn btn-success pull-right"> Add New</a>
+    <table id="emp-table" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Image</th>
+                <th>Gender</th>
+                <th>DOB</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Department</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Country</th>
+                <th>Pincode</th>
+                <th>Hobbies</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@section scripts{
+    <script>
+
+        $(document).ready(function () {
+            fnGetEmpData();
+            if ('@TempData["Message"]' != '') {
+                toastr["success"]("@TempData["Message"]");
+            }
+        });
+
+
+        var oTable;
+        function fnGetEmpData() {
+            oTable = $("#emp-table").DataTable({
+                searching: true,
+                ordering: true,
+                lengthChange: true,
+                serverSide: false,
+                responsive: true,
+                processing: true,
+                ajax: {
+                    type: "GET",
+                    url: '/Employee/GetEmpData',
+                    dataSrc: function (result) {
+                        return result.result;
+                    }
+                },
+                columns: [
+                    {
+                        "data": "FirstName",
+                        "render": function (data, type, full, meta) {
+                            return full.FirstName + " " + full.LastName;
+                        }
+                    },
+                    //{ "data": "LastName" },
+                    {
+                        "data": "EmployeePhoto",
+                        "render": function (data) {
+                            return '<img src=/Images/' + data +' height="64" width="64">'
+                        }
+                    },
+                    { "data": "Gender" },
+                    { "data": "DOB" },
+                    { "data": "Email" },
+                    { "data": "Phone" },
+                    { "data": "Department" },
+                    { "data": "City" },
+                    { "data": "State" },
+                    { "data": "Country" },
+                    { "data": "Pincode" },
+                    { "data": "Hobbies" },
+                    {
+                        "data": "EmpID",
+                        "render": function (data) {
+                            return '<a href="javascript:editEmployee(' + data + ');" class="btn btn-primary btn-sm btn-edit">Edit</a> <a href="javascript:deleteEmployee(' + data + ');" class="btn btn-sm btn-danger btn-delete">Delete</a>'
+                        }
+                    },
+                ]
+            });
+        }
+
+        function editEmployee(id) {
+            if (id != null) {
+                window.location.href = "/Employee/Create/" + id;
+            }
+            else {
+                window.location.href = "/Employee/Create/";
+            }
+        }
+
+        function deleteEmployee(id) {
+            var conf = confirm("Are you sure want to delete this employee?");
+            if (conf) {
+                $.ajax({
+                    url: '/Employee/DeleteEmp/?id=' + id,
+                    type: 'POST',
+                    success: function (result) {
+                        if (result.isSuccess) {
+                            toastr["success"]("Employee Sucessfully Deleted.");
+                            oTable.destroy();
+                            fnGetEmpData();
+                        }
+                        else {
+                            toastr["error"]("Something went wrong, please try agin");
+                        }
+                    }
+                });
+            }
+        }
+
+
+    </script>
+}

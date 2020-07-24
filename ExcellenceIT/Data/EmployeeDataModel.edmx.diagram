@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="3a491093f63643e181e4196fcd651158" Name="Diagram1">
+        <EntityTypeShape EntityType="ExcellenceITModel.TBL_City" Width="1.5" PointX="5.25" PointY="8.875" />
+        <EntityTypeShape EntityType="ExcellenceITModel.TBL_Country" Width="1.5" PointX="0.75" PointY="3.875" />
+        <EntityTypeShape EntityType="ExcellenceITModel.TBL_Employee" Width="1.5" PointX="7.5" PointY="5.25" />
+        <EntityTypeShape EntityType="ExcellenceITModel.TBL_State" Width="1.5" PointX="3" PointY="8.75" />
+        <AssociationConnector Association="ExcellenceITModel.FK_TBL_City_TBL_State" />
+        <AssociationConnector Association="ExcellenceITModel.FK_TBL_Employee_TBL_City" />
+        <AssociationConnector Association="ExcellenceITModel.FK_TBL_Employee_TBL_Country" />
+        <AssociationConnector Association="ExcellenceITModel.FK_TBL_State_TBL_Country" />
+        <AssociationConnector Association="ExcellenceITModel.FK_TBL_Employee_TBL_State" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
